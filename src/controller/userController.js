@@ -8,16 +8,17 @@ export const getUser = async (req, res) => {
     if (user) {
       return res.status(200).json({
         success: true,
-        user: user,
+        account: user,
       });
     } else {
       return res.status(404).json({
         message: "User not found",
         success: false,
-        user: user,
+        account: user,
       });
     }
   } catch (error) {
+    console.log(error);
     res.status(500).json({
       message: error.message,
       success: false,
@@ -51,7 +52,7 @@ export const signupUser = async (req, res) => {
     res.status(201).json({
       message: "User Signup Successfully!",
       success: true,
-      user: saveUser,
+      account: saveUser,
     });
   } catch (error) {
     res.status(500).json({
@@ -73,7 +74,7 @@ export const checkEmailAlreadyExist = async (req, res) => {
 
     const findEmail = await User.findOne({ email });
 
-    const isAccountExists = !!findEmail; 
+    const isAccountExists = !!findEmail;
     return res.status(200).json({
       data: { isAccountExists },
       status: true,
@@ -113,7 +114,7 @@ export const updateUser = async (req, res) => {
       return res.status(200).json({
         message: "User updated successfully",
         success: true,
-        data: updateUser,
+        account: updateUser,
       });
     }
   } catch (error) {
@@ -145,7 +146,7 @@ export const deleteUser = async (req, res) => {
       return res.status(200).json({
         message: "User deleted successfully",
         success: true,
-        user: deleteUser,
+        account: deleteUser,
       });
     }
   } catch (error) {
@@ -180,7 +181,7 @@ export const loginUser = async (req, res) => {
         return res.status(200).json({
           message: "Login Successful",
           success: true,
-          user: user,
+          account: user,
         });
       } else {
         return res.status(404).json({
@@ -194,6 +195,21 @@ export const loginUser = async (req, res) => {
         success: false,
       });
     }
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+      success: false,
+    });
+  }
+};
+
+export const logoutUser = async (req, res) => {
+  try {
+    res.clearCookie("login");
+    return res.status(200).json({
+      message: "Logout Successful",
+      success: true,
+    });
   } catch (error) {
     res.status(500).json({
       message: error.message,

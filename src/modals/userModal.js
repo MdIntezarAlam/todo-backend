@@ -6,11 +6,13 @@ const userShema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
+    trim: true,
   },
   email: {
     type: String,
     required: true,
     unique: true,
+    trim: true,
     validate: function () {
       return validator.validate(this.email);
     },
@@ -19,11 +21,13 @@ const userShema = new mongoose.Schema({
     type: String,
     required: true,
     unique: true,
+    trim: true,
   },
   conPassword: {
     type: String,
     required: true,
     unique: true,
+    trim: true,
     validate: function () {
       return this.conPassword === this.password;
     },

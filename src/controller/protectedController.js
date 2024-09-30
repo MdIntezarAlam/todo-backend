@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-export const proctedController = async (req, res, next) => {
+export const protectedController = async (req, res, next) => {
   const JWT_SECRATE_KEY = process.env.JWT_SECRATE_KEY;
   try {
     if (req.cookies.login) {
