@@ -28,6 +28,16 @@ const userShema = new mongoose.Schema({
       return this.conPassword === this.password;
     },
   },
+  //user role
+  // role: {
+  //   type: String,
+  //   enum: ["admin", "user", "resturent", "deliveryBoy"],
+  //   default: "user",
+  // },
+  // profileImage: {
+  //   type: String,
+  //   default: "img/users/default.jepeg",
+  // },
 });
 
 //which mens that password and confirm password should be same

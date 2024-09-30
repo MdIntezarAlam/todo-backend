@@ -6,6 +6,7 @@ import {
   editTodo,
   fetchTodo,
   fetchTodoById,
+  searchTodo,
 } from "../controller/todoController.js";
 
 const router = express.Router();
@@ -16,5 +17,6 @@ router.route("/create").post(createTodo);
 router.route("/edit/:id").put(editTodo);
 router.route("/delete/:id").delete(deleteTodoById);
 router.route("/delete").delete(deleteTodo);
+router.route("/search/:title").get(searchTodo);
 
 export default router;

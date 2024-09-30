@@ -1,5 +1,6 @@
 import Todo from "../modals/todoModal.js";
 import mongoose from "mongoose";
+
 export const fetchTodo = async (req, res) => {
   try {
     const todos = await Todo.find();
@@ -156,4 +157,36 @@ export const editTodo = async (req, res) => {
   } catch (error) {}
 };
 
-//search
+export const searchTodo = async (req, res) => {
+  try {
+    const { title } = req.params;
+
+    if (!title) {
+      return res.status(400).json({
+        message: "Title query parameter is required",
+        success: false,
+      });
+    }
+
+    const foundTodos = await Todo.find({
+      title: { $regex: title, $options: "i" },
+    });
+
+    if (foundTodos.length > 0) {
+      return res.status(200).json({
+        success: true,
+        data: foundTodos,
+      });
+    } else {
+      return res.status(404).json({
+        success: false,
+        message: "No todos found with the specified title",
+      });
+    }
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
