@@ -61,6 +61,31 @@ export const signupUser = async (req, res) => {
   }
 };
 
+export const checkEmailAlreadyExist = async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email) {
+      return res.status(400).json({
+        message: "Email is required",
+        success: false,
+      });
+    }
+
+    const findEmail = await User.findOne({ email });
+
+    const isAccountExists = !!findEmail; 
+    return res.status(200).json({
+      data: { isAccountExists },
+      status: true,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+      status: false,
+    });
+  }
+};
+
 export const updateUser = async (req, res) => {
   try {
     const { id } = req.params;

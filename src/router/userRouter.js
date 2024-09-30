@@ -1,5 +1,6 @@
 import express from "express";
 import {
+  checkEmailAlreadyExist,
   deleteUser,
   getUser,
   loginUser,
@@ -12,6 +13,7 @@ const router = express.Router();
 
 router.route("/").get(proctedController, getUser);
 router.route("/signup").post(signupUser);
+router.post("/email", checkEmailAlreadyExist);
 router.route("/update/:id").put(updateUser);
 router.route("/delete/:id").delete(deleteUser);
 
