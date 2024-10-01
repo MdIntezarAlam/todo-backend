@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { stateEnumValues } from "../../helper/state.js";
 
 const addressSchema = new mongoose.Schema({
   name: {
@@ -19,7 +20,6 @@ const addressSchema = new mongoose.Schema({
   },
   street2: {
     type: String,
-    required: true,
   },
   city: {
     type: String,
@@ -28,10 +28,13 @@ const addressSchema = new mongoose.Schema({
   state: {
     type: String,
     required: true,
+    enum: stateEnumValues,
   },
+
   country: {
     type: String,
     required: true,
+    default: "India",
   },
   pincode: {
     type: Number,

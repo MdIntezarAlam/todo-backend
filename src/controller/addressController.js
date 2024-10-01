@@ -4,7 +4,7 @@ import Address from "../modals/addressModal.js";
 export const fetchAddress = async (req, res) => {
   try {
     const address = await Address.find({});
-    if (address) {
+    if (address.length > 0) {
       return res.status(200).json({
         message: "Address fetched successfully",
         success: true,
@@ -37,31 +37,32 @@ export const createAddress = async (req, res) => {
       country,
       pincode,
     } = req.body;
-    console.log(req.body);
 
     if (
       !name ||
       !contactName ||
       !address ||
       !street1 ||
-      !street2 ||
       !city ||
       !state ||
       !country ||
       !pincode
     ) {
       return res.status(400).json({
-        message: "All fields are required",
+        message: "All required fields must be provided",
         success: false,
       });
     }
 
+    // Pincode validation (should be exactly 6 digits)
     if (pincode.toString().length !== 6) {
       return res.status(400).json({
         message: "Pincode must be exactly 6 digits",
         success: false,
       });
     }
+
+    // Check if the address with the same pincode already exists
     const existingAddress = await Address.findOne({ pincode });
     if (existingAddress) {
       return res.status(400).json({
@@ -70,7 +71,7 @@ export const createAddress = async (req, res) => {
       });
     }
 
-    const adds = new Address({
+    const newAddress = new Address({
       name,
       contactName,
       address,
@@ -82,14 +83,13 @@ export const createAddress = async (req, res) => {
       pincode,
     });
 
-    const saveAddress = await adds.save();
+    const saveAddress = await newAddress.save();
     return res.status(200).json({
       message: "Address created successfully",
       success: true,
       data: saveAddress,
     });
   } catch (error) {
-    console.log(error);
     return res.status(500).json({
       message: error.message,
       success: false,
@@ -103,40 +103,33 @@ export const editAddress = async (req, res) => {
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({
-        message: "Invalid Address Id",
+        message: "Invalid Address ID",
         success: false,
       });
     }
 
-    const findId = await Address.findById(id);
-    if (!findId) {
+    const existingAddress = await Address.findById(id);
+    if (!existingAddress) {
       return res.status(404).json({
-        message: "Address Id Not Found!",
+        message: "Address not found",
         success: false,
       });
-    } else {
-      const {
-        name,
-        contactName,
-        address,
-        street1,
-        street2,
-        city,
-        state,
-        country,
-        pincode,
-      } = req.body;
-      //  user update the pincode and different from the existing
+    }
 
-      if (pincode && pincode !== findId.pincode) {
-        const existingAddress = await Address.findOne({ pincode });
-        if (existingAddress) {
-          return res.status(400).json({
-            message: "Address with this pincode already exists",
-            success: false,
-          });
-        }
-      }
+    const {
+      name,
+      contactName,
+      address,
+      street1,
+      street2,
+      city,
+      state,
+      country,
+      pincode,
+    } = req.body;
+
+    // Check if pincode is being updated and if it already exists
+    if (pincode && pincode !== existingAddress.pincode) {
       if (pincode.toString().length !== 6) {
         return res.status(400).json({
           message: "Pincode must be exactly 6 digits",
@@ -144,28 +137,37 @@ export const editAddress = async (req, res) => {
         });
       }
 
-      const updatedAddress = await Address.findByIdAndUpdate(
-        id,
-        {
-          name: name || findId.name,
-          contactName: contactName || findId.contactName,
-          address: address || findId.address,
-          street1: street1 || findId.street1,
-          street2: street2 || findId.street2,
-          city: city || findId.city,
-          state: state || findId.state,
-          country: country || findId.country,
-          pincode: pincode || findId.pincode,
-        },
-        { new: true } // Return the updated document
-      );
-
-      return res.status(200).json({
-        message: "Address updated successfully",
-        success: true,
-        data: updatedAddress,
-      });
+      const addressWithSamePincode = await Address.findOne({ pincode });
+      if (addressWithSamePincode) {
+        return res.status(400).json({
+          message: "Address with this pincode already exists",
+          success: false,
+        });
+      }
     }
+
+    // Update the address with the new data or keep old data if not provided
+    const updatedAddress = await Address.findByIdAndUpdate(
+      id,
+      {
+        name: name || existingAddress.name,
+        contactName: contactName || existingAddress.contactName,
+        address: address || existingAddress.address,
+        street1: street1 || existingAddress.street1,
+        street2: street2 || existingAddress.street2,
+        city: city || existingAddress.city,
+        state: state || existingAddress.state,
+        country: country || existingAddress.country,
+        pincode: pincode || existingAddress.pincode,
+      },
+      { new: true }
+    );
+
+    return res.status(200).json({
+      message: "Address updated successfully",
+      success: true,
+      data: updatedAddress,
+    });
   } catch (error) {
     return res.status(500).json({
       message: error.message,
@@ -177,26 +179,27 @@ export const editAddress = async (req, res) => {
 export const deleteSingleAddres = async (req, res) => {
   try {
     const { id } = req.params;
+
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({
-        message: "Invalid Address Id",
+        message: "Invalid Address ID",
         success: false,
       });
     }
-    const findId = await Address.findById(id);
-    if (!findId) {
+
+    const existingAddress = await Address.findById(id);
+    if (!existingAddress) {
       return res.status(404).json({
-        message: "Address Id Not Found!",
+        message: "Address not found",
         success: false,
       });
-    } else {
-      const deleteAddress = await Address.findByIdAndDelete(id);
-      return res.status(200).json({
-        message: "Address deleted successfully",
-        success: true,
-        data: deleteAddress,
-      });
     }
+
+    await Address.findByIdAndDelete(id);
+    return res.status(200).json({
+      message: "Address deleted successfully",
+      success: true,
+    });
   } catch (error) {
     return res.status(500).json({
       message: error.message,
@@ -207,18 +210,12 @@ export const deleteSingleAddres = async (req, res) => {
 
 export const deleteAll = async (req, res) => {
   try {
-    const delAdds = await Address.deleteMany();
-    if (!delAdds) {
-      return res.status(404).json({
-        message: "Address not found",
-        success: false,
-      });
-    } else {
-      return res.status(200).json({
-        message: "All Address deleted successfully",
-        success: true,
-      });
-    }
+    const result = await Address.deleteMany();
+    return res.status(200).json({
+      message: "All addresses deleted successfully",
+      success: true,
+      data: result,
+    });
   } catch (error) {
     return res.status(500).json({
       message: error.message,
