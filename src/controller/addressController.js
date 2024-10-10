@@ -24,6 +24,30 @@ export const fetchAddress = async (req, res) => {
   }
 };
 
+export const singleAddress = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const address = await Address.findById(id);
+    if (address) {
+      return res.status(200).json({
+        message: "Address fetched successfully",
+        success: true,
+        data: address,
+      });
+    } else {
+      return res.status(404).json({
+        message: "Address Not Found with this Id !",
+        success: false,
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      message: error.message,
+      success: false,
+    });
+  }
+};
 export const createAddress = async (req, res) => {
   try {
     const {
