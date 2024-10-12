@@ -176,37 +176,6 @@ export const changePasswordController = async (req, res) => {
   }
 };
 
-export const deleteUser = async (req, res) => {
-  try {
-    const { id } = req.params;
-
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({
-        message: "Invalid User Id",
-        success: false,
-      });
-    }
-    const findId = await User.findById(id);
-    if (!findId) {
-      return res.status(404).json({
-        message: "User Id Not Found!",
-        success: false,
-      });
-    } else {
-      const deleteUser = await User.findByIdAndDelete(id);
-      return res.status(200).json({
-        message: "User deleted successfully",
-        success: true,
-        account: deleteUser,
-      });
-    }
-  } catch (error) {
-    res.status(500).json({
-      message: error.message,
-      success: false,
-    });
-  }
-};
 export const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -247,6 +216,63 @@ export const logoutUser = async (req, res) => {
     return res.status(200).json({
       message: "Logout Successful",
       success: true,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+      success: false,
+    });
+  }
+};
+
+export const deleteAccount = async (req, res) => {
+  try {
+    const { password, deleteType } = req.body;
+
+    if (!password) {
+      return res.status(400).json({
+        message: "Password is required",
+        success: false,
+      });
+    }
+
+    if (deleteType !== "DELETE_MY_ACCOUNT") {
+      return res.status(400).json({
+        message: "Enter DELETE_MY_ACCOUNT",
+        success: false,
+      });
+    }
+
+    const { id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({
+        message: "Invalid User Id",
+        success: false,
+      });
+    }
+
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json({
+        message: "User Id Not Found!",
+        success: false,
+      });
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(400).json({
+        message: "Password is incorrect",
+        success: false,
+      });
+    }
+
+    await User.findByIdAndDelete(id);
+    return res.status(200).json({
+      message: "Account deleted successfully",
+      success: true,
+      account: user,
     });
   } catch (error) {
     res.status(500).json({

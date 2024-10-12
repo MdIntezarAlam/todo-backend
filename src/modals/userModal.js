@@ -22,6 +22,10 @@ const userSchema = new mongoose.Schema({
     required: true,
     trim: true,
   },
+  deleteType: {
+    type: String,
+    trim: true,
+  },
 });
 
 // Hash password before saving to the database

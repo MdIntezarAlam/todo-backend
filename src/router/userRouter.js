@@ -1,7 +1,7 @@
 import express from "express";
 import {
   checkEmailAlreadyExist,
-  deleteUser,
+  deleteAccount,
   getUser,
   loginUser,
   logoutUser,
@@ -20,7 +20,7 @@ router.route("/update/:id").put(updateUser);
 router
   .route("/change-password/:id")
   .put(protectedController, changePasswordController);
-router.route("/delete/:id").delete(deleteUser);
+router.route("/delete/:id").delete(deleteAccount);
 
 router.route("/login").post(loginUser);
 router.route("/logout").post(logoutUser);
