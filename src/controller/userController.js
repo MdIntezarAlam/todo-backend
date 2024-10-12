@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import User from "../modals/userModal.js";
 import jwt from "jsonwebtoken";
+import bcrypt from "bcrypt";
 
 export const getUser = async (req, res) => {
   try {
@@ -25,40 +26,44 @@ export const getUser = async (req, res) => {
     });
   }
 };
-
 export const signupUser = async (req, res) => {
   try {
     const { name, email, password, conPassword } = req.body;
+
     if (!name || !email || !password || !conPassword) {
-      return res.status(400).json({
-        message: "All fields are required",
-      });
+      return res
+        .status(400)
+        .json({ message: "All fields are required", success: false });
     }
 
     if (password !== conPassword) {
-      return res.status(400).json({
-        message: "Password and Confirm Password should be same",
-      });
+      return res
+        .status(400)
+        .json({ message: "Passwords do not match", success: false });
     }
 
-    const findEmail = await User.findOne({ email });
-    if (findEmail) {
-      return res.status(403).json({
-        message: "Email Already Exists",
-      });
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res
+        .status(400)
+        .json({ message: "Email already exists", success: false });
     }
-    const newUser = new User({ name, email, password, conPassword });
-    const saveUser = await newUser.save();
-    res.status(201).json({
-      message: "User Signup Successfully!",
+
+    const newUser = new User({
+      name,
+      email,
+      password,
+    });
+
+    await newUser.save();
+
+    return res.status(201).json({
+      message: "User registered successfully",
       success: true,
-      account: saveUser,
+      account: newUser,
     });
   } catch (error) {
-    res.status(500).json({
-      message: error.message,
-      success: false,
-    });
+    return res.status(500).json({ message: error.message, success: false });
   }
 };
 
@@ -124,6 +129,52 @@ export const updateUser = async (req, res) => {
     });
   }
 };
+export const changePasswordController = async (req, res) => {
+  try {
+    const { newPassword, conPassword } = req.body;
+
+    if (!newPassword || !conPassword) {
+      return res
+        .status(400)
+        .json({ message: "All password fields are required", success: false });
+    }
+
+    if (newPassword !== conPassword) {
+      return res.status(400).json({
+        message: "New password and confirm password do not match",
+        success: false,
+      });
+    }
+
+    const user = await User.findById(req.params.id);
+    if (!user) {
+      return res
+        .status(404)
+        .json({ message: "User not found", success: false });
+    }
+
+    const isMatch = await bcrypt.compare(oldPassword, user.password);
+    if (!isMatch) {
+      return res
+        .status(400)
+        .json({ message: "Old Password is incorrect.", success: false });
+    }
+
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
+
+    await User.findByIdAndUpdate(user._id, { password: hashedPassword });
+
+    return res.status(200).json({
+      message: "Password changed successfully",
+      success: true,
+      account: user,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: error.message, success: false });
+  }
+};
 
 export const deleteUser = async (req, res) => {
   try {
@@ -156,50 +207,37 @@ export const deleteUser = async (req, res) => {
     });
   }
 };
-
 export const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
     if (!email || !password) {
-      return res.status(404).json({
-        message: "All fields are required",
-      });
+      return res
+        .status(400)
+        .json({ message: "All fields are required", success: false });
     }
+
     const user = await User.findOne({ email });
-    if (user) {
-      if (password === user.password) {
-        //jwt takes 1.payload, 2.secretkey, 3.options
-        let payloads = user["_id"];
-        const JWT_SECRATE_KEY = process.env.JWT_SECRATE_KEY;
-        const token = jwt.sign({ payloads }, JWT_SECRATE_KEY);
-        console.log(token);
-        //than save in to the cookie
-        res.cookie("login", token, { httpOnly: true });
-
-        //after that verify in protected route
-
-        return res.status(200).json({
-          message: "Login Successful",
-          success: true,
-          account: user,
-        });
-      } else {
-        return res.status(404).json({
-          message: "Invalid Credentials",
-          success: false,
-        });
-      }
-    } else {
-      return res.status(404).json({
-        message: "User does not exist",
-        success: false,
+    if (user && (await bcrypt.compare(password, user.password))) {
+      const JWT_SECRATE_KEY = process.env.JWT_SECRATE_KEY;
+      const token = jwt.sign({ payloads: user._id }, JWT_SECRATE_KEY, {
+        expiresIn: "1h",
       });
+
+      res.cookie("login", token, { httpOnly: true });
+
+      return res
+        .status(200)
+        .json({ message: "Login Successful", success: true, account: user });
+    } else {
+      return res
+        .status(401)
+        .json({ message: "Invalid Credentials", success: false });
     }
   } catch (error) {
-    res.status(500).json({
-      message: error.message,
-      success: false,
-    });
+    console.error(error);
+    return res
+      .status(500)
+      .json({ message: "Internal Server Error", success: false });
   }
 };
 

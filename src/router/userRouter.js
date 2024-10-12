@@ -6,6 +6,7 @@ import {
   loginUser,
   logoutUser,
   signupUser,
+  changePasswordController,
   updateUser,
 } from "../controller/userController.js";
 import { protectedController } from "../controller/protectedController.js";
@@ -16,6 +17,9 @@ router.route("/").get(protectedController, getUser);
 router.route("/signup").post(signupUser);
 router.post("/email", checkEmailAlreadyExist);
 router.route("/update/:id").put(updateUser);
+router
+  .route("/change-password/:id")
+  .put(protectedController, changePasswordController);
 router.route("/delete/:id").delete(deleteUser);
 
 router.route("/login").post(loginUser);
