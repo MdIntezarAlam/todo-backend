@@ -17,7 +17,7 @@ app.use(
   cors({
     // many origins
     origin: ["http://localhost:3000", "http://localhost:3001"],
-    credentials: true,
+    credentials: true
   })
 );
 app.use(express.json());
