@@ -1,12 +1,12 @@
 import express from "express";
 import {
+  changePasswordController,
   checkEmailAlreadyExist,
   deleteAccount,
   getUser,
   loginUser,
   logoutUser,
   signupUser,
-  changePasswordController,
   updateUser,
 } from "../controller/userController.js";
 import { protectedController } from "../controller/protectedController.js";
@@ -23,5 +23,5 @@ router
 router.route("/delete/:id").delete(deleteAccount);
 
 router.route("/login").post(loginUser);
-router.route("/logout").post(logoutUser);
+router.route("/logout").get(logoutUser);
 export default router;

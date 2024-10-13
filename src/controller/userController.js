@@ -5,25 +5,22 @@ import bcrypt from "bcrypt";
 
 export const getUser = async (req, res) => {
   try {
-    const user = await User.find();
-    if (user) {
-      return res.status(200).json({
-        success: true,
-        account: user,
-      });
-    } else {
-      return res.status(404).json({
-        message: "User not found",
-        success: false,
-        account: user,
-      });
+    const userId = req.user.payloads;
+    console.log(userId);
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res
+        .status(404)
+        .json({ message: "User not found", success: false });
     }
+
+    return res.status(200).json({ user, success: true });
   } catch (error) {
-    console.log(error);
-    res.status(500).json({
-      message: error.message,
-      success: false,
-    });
+    console.error(error);
+    return res
+      .status(500)
+      .json({ message: "Internal Server Error", success: false });
   }
 };
 export const signupUser = async (req, res) => {
@@ -196,7 +193,12 @@ export const loginUser = async (req, res) => {
 
       return res
         .status(200)
-        .json({ message: "Login Successful", success: true, account: user });
+        .json({
+          message: "Login Successful",
+          success: true,
+          account: user,
+          token,
+        });
     } else {
       return res
         .status(401)
@@ -207,21 +209,6 @@ export const loginUser = async (req, res) => {
     return res
       .status(500)
       .json({ message: "Internal Server Error", success: false });
-  }
-};
-
-export const logoutUser = async (req, res) => {
-  try {
-    res.clearCookie("login");
-    return res.status(200).json({
-      message: "Logout Successful",
-      success: true,
-    });
-  } catch (error) {
-    res.status(500).json({
-      message: error.message,
-      success: false,
-    });
   }
 };
 
@@ -273,6 +260,20 @@ export const deleteAccount = async (req, res) => {
       message: "Account deleted successfully",
       success: true,
       account: user,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+      success: false,
+    });
+  }
+};
+export const logoutUser = async (req, res) => {
+  try {
+    res.clearCookie("login");
+    return res.status(200).json({
+      message: "Logout Successful",
+      success: true,
     });
   } catch (error) {
     res.status(500).json({

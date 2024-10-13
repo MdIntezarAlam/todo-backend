@@ -12,7 +12,11 @@ export const protectedController = async (req, res, next) => {
         res.status(403).json({ message: "User Not Verified!" });
       }
     } else {
-      res.status(403).json({ message: "Operation Not Allowed!" });
+      res
+        .status(403)
+        .json({
+          message: "UnAuthorized Access Operation Not Allowed! Please Login ",
+        });
     }
   } catch (error) {
     console.log(error);

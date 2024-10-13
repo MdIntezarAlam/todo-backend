@@ -26,6 +26,16 @@ const userSchema = new mongoose.Schema({
     type: String,
     trim: true,
   },
+  //
+  profileImage: {
+    type: String,
+    default: "/image/default.png",
+  },
+  role: {
+    type: String,
+    enum: ["admin", "user", "resturent", "deliveryBoy"],
+    default: "user",
+  },
 });
 
 // Hash password before saving to the database
