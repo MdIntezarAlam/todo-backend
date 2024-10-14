@@ -5,6 +5,7 @@ import connectDB from "./src/config/db.js";
 import todoRouter from "./src/router/todoRouter.js";
 import userRouter from "./src/router/userRouter.js";
 import addressRouter from "./src/router/addressRouter.js";
+import roomRouter from "./src/router/roomRouter.js";
 import cookieParser from "cookie-parser";
 import { Server } from "socket.io";
 import { createServer } from "http";
@@ -34,6 +35,7 @@ app.use(
 app.use("/api/v2", todoRouter);
 app.use("/api/v2/auth", userRouter);
 app.use("/api/v2/address", addressRouter);
+app.use("/api/v2", roomRouter);
 
 socketConnectionController(io);
 

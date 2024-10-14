@@ -36,3 +36,11 @@ export const stateEnumValues = [
   "Ladakh",
   "Jammu and Kashmir",
 ];
+
+export const reasonType = [
+  "normal_contact",
+  "order_related",
+  "delevery_related",
+  "payment_related",
+  "other",
+];
