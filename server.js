@@ -3,30 +3,41 @@ import cors from "cors";
 import dotenv from "dotenv";
 import connectDB from "./src/config/db.js";
 import todoRouter from "./src/router/todoRouter.js";
-import userRuter from "./src/router/userRouter.js";
+import userRouter from "./src/router/userRouter.js";
 import addressRouter from "./src/router/addressRouter.js";
 import cookieParser from "cookie-parser";
-
-const PORT = process.env.PORT || 5000;
+import { Server } from "socket.io";
+import { createServer } from "http";
+import { socketConnectionController } from "./src/controller/socketController.js";
 
 dotenv.config();
-const app = express();
-app.use(cookieParser());
+connectDB();
 
+const app = express();
+const server = createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: ["http://localhost:3000", "http://localhost:3001"],
+    credentials: true,
+  },
+});
+
+app.use(cookieParser());
+app.use(express.json());
 app.use(
   cors({
-    // many origins
     origin: ["http://localhost:3000", "http://localhost:3001"],
     credentials: true,
   })
 );
-app.use(express.json());
-connectDB();
 
 app.use("/api/v2", todoRouter);
-app.use("/api/v2/auth", userRuter);
+app.use("/api/v2/auth", userRouter);
 app.use("/api/v2/address", addressRouter);
 
-app.listen(PORT, () => {
-  console.log(`server is running on localhost ${PORT}`);
+socketConnectionController(io);
+
+const PORT = process.env.PORT || 5000;
+server.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });

@@ -191,14 +191,12 @@ export const loginUser = async (req, res) => {
 
       res.cookie("login", token, { httpOnly: true });
 
-      return res
-        .status(200)
-        .json({
-          message: "Login Successful",
-          success: true,
-          account: user,
-          token,
-        });
+      return res.status(200).json({
+        message: "Login Successful",
+        success: true,
+        account: user,
+        token,
+      });
     } else {
       return res
         .status(401)
