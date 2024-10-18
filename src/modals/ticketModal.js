@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import { reasonType } from "../../helper/state.js";
 
-const roomSchema = new mongoose.Schema({
+const ticketSchema = new mongoose.Schema({
   subject: {
     type: String,
     required: true,
@@ -20,5 +20,5 @@ const roomSchema = new mongoose.Schema({
     required: true,
   },
 });
-const Room = mongoose.model("Room", roomSchema);
-export default Room;
+const Ticket = mongoose.model("ticket", ticketSchema);
+export default Ticket;
