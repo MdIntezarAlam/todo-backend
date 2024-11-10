@@ -254,13 +254,13 @@ export const loginUser = async ( req, res ) => {
       const token = jwt.sign( { payload: user._id }, JWT_SECRET_KEY, { expiresIn: "1h" } );
 
       // Set the cookie with additional settings for security and cross-origin compatibility
-      res.cookie( "login", token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
-        maxAge: 3600000, // 1 hour
-      } );
-
+      // res.cookie( "login", token, {
+      //   httpOnly: true,
+      //   secure: process.env.NODE_ENV === "production",
+      //   sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
+      //   maxAge: 3600000, // 1 hour
+      // } );
+      res.cookie( "login", token, { httpOnly: true } );
 
       return res.status( 200 ).json( {
         message: "Login Successful",
