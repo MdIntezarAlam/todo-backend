@@ -16,6 +16,8 @@ connectDB();
 
 const app = express();
 
+app.options( '*', cors() ); // Handle preflight requests globally
+
 const server = createServer( app );
 const io = new Server( server, {
   cors: {
