@@ -19,7 +19,7 @@ const app = express();
 const server = createServer( app );
 const io = new Server( server, {
   cors: {
-    origin: [ "http://localhost:3000", "http://localhost:3001" ],
+    origin: [ "http://localhost:3000", "http://localhost:3001", "https://dev-intezar-todo.onrender.com" ],
     credentials: true,
   },
 } );
@@ -28,7 +28,7 @@ app.use( cookieParser() );
 app.use( express.json() );
 app.use(
   cors( {
-    origin: [ "http://localhost:3000", "http://localhost:3001" ],
+    origin: [ "http://localhost:3000", "http://localhost:3001", "https://dev-intezar-todo.onrender.com" ],
     credentials: true,
   } )
 );
