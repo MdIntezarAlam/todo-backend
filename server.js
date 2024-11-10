@@ -23,7 +23,7 @@ const io = new Server( server, {
       "http://localhost:3000",
       "http://localhost:3001",
       "https://dev-intezar-todo.onrender.com",
-      "https://your-app-name.netlify.app"
+      "https://fullstack-forntend.netlify.app/"
     ],
     credentials: true,
   },
@@ -37,7 +37,7 @@ app.use(
       "http://localhost:3000",
       "http://localhost:3001",
       "https://dev-intezar-todo.onrender.com",
-      "https://your-app-name.netlify.app"
+      "https://fullstack-forntend.netlify.app/"
     ],
     credentials: true,
   } )
