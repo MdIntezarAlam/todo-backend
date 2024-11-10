@@ -16,31 +16,31 @@ connectDB();
 
 const app = express();
 
-const server = createServer(app);
-const io = new Server(server, {
+const server = createServer( app );
+const io = new Server( server, {
   cors: {
-    origin: ["http://localhost:3000", "http://localhost:3001"],
+    origin: [ "http://localhost:3000", "http://localhost:3001" ],
     credentials: true,
   },
-});
+} );
 
-app.use(cookieParser());
-app.use(express.json());
+app.use( cookieParser() );
+app.use( express.json() );
 app.use(
-  cors({
-    origin: ["http://localhost:3000", "http://localhost:3001"],
+  cors( {
+    origin: [ "http://localhost:3000", "http://localhost:3001" ],
     credentials: true,
-  })
+  } )
 );
 
-app.use("/api/v2", todoRouter);
-app.use("/api/v2/auth", userRouter);
-app.use("/api/v2/address", addressRouter);
-app.use("/api/v2", ticketRouter);
+app.use( "/api/v2", todoRouter );
+app.use( "/api/v2/auth", userRouter );
+app.use( "/api/v2/address", addressRouter );
+app.use( "/api/v2", ticketRouter );
 
-socketConnectionController(io);
+socketConnectionController( io );
 
-const PORT = process.env.PORT || 5000;
-server.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+const PORT = process.env.PORT;
+server.listen( PORT, () => {
+  console.log( `Server is running on port ${ PORT }` );
+} );
