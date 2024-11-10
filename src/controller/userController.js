@@ -256,10 +256,11 @@ export const loginUser = async ( req, res ) => {
       // Set the cookie with additional settings for security and cross-origin compatibility
       res.cookie( "login", token, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production", // Ensures secure only in production
-        sameSite: "None", // Allows cross-origin cookies
-        maxAge: 3600000, // 1 hour in milliseconds
+        secure: process.env.NODE_ENV === "production",
+        sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
+        maxAge: 3600000, // 1 hour
       } );
+
 
       return res.status( 200 ).json( {
         message: "Login Successful",
