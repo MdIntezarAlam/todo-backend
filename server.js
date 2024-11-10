@@ -59,7 +59,6 @@
 
 
 // //this is the deplyed link api =>https://dev-intezar-todo.onrender.com/api/v2/fetch
-
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
@@ -75,14 +74,14 @@ connectDB();
 
 const app = express();
 
-app.options( '*', cors() ); // Handle preflight requests globally
-
+// List of allowed origins (ensure there are no typos)
 const allowedOrigins = [
-  "http://localhost:3000", // Development local server
+  "http://localhost:3000", // Local development server
   "https://dev-intezar-todo.onrender.com", // Production Render URL
-  "https://fullstack-forntend.netlify.app" // Production Netlify URL
+  "https://fullstack-forntend.netlify.app" // Production Netlify URL (verify no typo here)
 ];
 
+// CORS configuration
 const corsOptions = {
   origin: function ( origin, callback ) {
     console.log( "Incoming origin:", origin ); // Debugging line to check incoming origin
@@ -94,10 +93,12 @@ const corsOptions = {
       callback( new Error( "Not allowed by CORS" ) );
     }
   },
-  credentials: true, // Enable credentials (cookies, authorization headers)
+  credentials: true,  // Enable credentials (cookies)
+  methods: [ 'GET', 'POST', 'PUT', 'DELETE', 'OPTIONS' ],  // Allow common methods
+  allowedHeaders: [ 'Content-Type', 'Authorization' ],  // Allow specific headers
 };
 
-app.use( cors( corsOptions ) );
+app.use( cors( corsOptions ) ); // Apply CORS configuration
 app.use( cookieParser() );
 app.use( express.json() );
 app.use( "/api/v2", todoRouter );
