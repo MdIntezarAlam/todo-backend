@@ -59,6 +59,9 @@
 
 
 // //this is the deplyed link api =>https://dev-intezar-todo.onrender.com/api/v2/fetch
+
+
+
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
@@ -76,8 +79,6 @@ dotenv.config();
 connectDB();
 
 const app = express();
-
-app.options( '*', cors() ); // Handle preflight requests globally
 
 // Update CORS configuration to allow credentials and specify origin
 const allowedOrigins = [
@@ -100,19 +101,32 @@ const corsOptions = {
   credentials: true, // Enable credentials (cookies, authorization headers)
 };
 
+app.options( '*', cors() ); // Handle preflight requests globally
 app.use( cors( corsOptions ) );
 
 app.use( cookieParser() );
 app.use( express.json() );
+
+// Define the socket server after creating the Express server
+const server = createServer( app );
+
+// Initialize the socket.io instance
+const io = new Server( server, {
+  cors: {
+    origin: allowedOrigins,
+    credentials: true,
+  },
+} );
+
+// Now you can pass `io` to your `socketConnectionController`
+socketConnectionController( io );
+
 app.use( "/api/v2", todoRouter );
 app.use( "/api/v2/auth", userRouter );
 app.use( "/api/v2/address", addressRouter );
 app.use( "/api/v2", ticketRouter );
 
-socketConnectionController( io );
-
-const PORT = process.env.PORT;
-const server = createServer( app );
+const PORT = process.env.PORT || 5000; // Default to port 5000 if process.env.PORT is undefined
 server.listen( PORT, () => {
   console.log( `Server is running on port ${ PORT }` );
 } );
