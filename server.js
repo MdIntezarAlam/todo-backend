@@ -41,7 +41,7 @@ const corsOptions = {
 
 const server = createServer( app );
 // const io = new Server( server, { cors: corsOptions, transports: [ "websocket" ] } );
-const io = new Server( server, { cors: corsOptions, transports: [ "websocket" ] } );//addition
+const io = new Server( server, { cors: corsOptions, } );//addition
 
 app.use( cookieParser() );
 app.use( express.json() );

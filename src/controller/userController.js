@@ -236,46 +236,6 @@ export const loginUser = async ( req, res ) => {
       .json( { message: "Internal Server Error", success: false } );
   }
 };
-// export const loginUser = async ( req, res ) => {
-//   try
-//   {
-//     const { email, password } = req.body;
-//     if ( !email || !password )
-//     {
-//       return res.status( 400 ).json( { message: "All fields are required", success: false } );
-//     }
-
-//     const user = await User.findOne( { email } );
-//     if ( user && ( await bcrypt.compare( password, user.password ) ) )
-//     {
-//       const JWT_SECRET_KEY = process.env.JWT_SECRATE_KEY;
-//       const token = jwt.sign( { payload: user._id }, JWT_SECRET_KEY, { expiresIn: "1h" } );
-
-//       // Set the cookie with additional settings for security and cross-origin compatibility
-//       // res.cookie( "login", token, {
-//       //   httpOnly: true,
-//       //   secure: process.env.NODE_ENV === "production",
-//       //   sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
-//       //   maxAge: 3600000, // 1 hour
-//       // } );
-//       res.cookie( "login", token, { httpOnly: true } );
-
-//       return res.status( 200 ).json( {
-//         message: "Login Successful",
-//         success: true,
-//         account: user,
-//       } );
-//     } else
-//     {
-//       return res.status( 401 ).json( { message: "Invalid Credentials", success: false } );
-//     }
-//   } catch ( error )
-//   {
-//     console.error( error );
-//     return res.status( 500 ).json( { message: "Internal Server Error", success: false } );
-//   }
-// };
-
 
 export const deleteAccount = async ( req, res ) => {
   try
