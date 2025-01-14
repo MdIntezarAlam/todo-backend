@@ -4,9 +4,10 @@ export const protectedController = async ( req, res, next ) => {
   const JWT_SECRATE_KEY = process.env.JWT_SECRATE_KEY;
   try
   {
-    if ( req.cookies.login )
+    const token = req.cookies.login;
+    if ( token )
     {
-      const isVerified = jwt.verify( req.cookies.login, JWT_SECRATE_KEY );
+      const isVerified = jwt.verify( token, JWT_SECRATE_KEY );
       if ( isVerified )
       {
         req.user = isVerified;
@@ -30,4 +31,6 @@ export const protectedController = async ( req, res, next ) => {
     console.log( error );
   }
 };
+
+
 

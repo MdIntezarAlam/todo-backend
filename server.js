@@ -20,7 +20,7 @@ const app = express();
 const allowedOrigins = [
   "http://localhost:3000", // Local development server
   "https://dev-intezar-todo.onrender.com", // Production Render URL
-  "https://fullstack-forntend.netlify.app" // Production Netlify URL (verify no typo here)
+  "https://fullstack-forntend.netlify.app" // Production Netlify URL
 ];
 
 const corsOptions = {
